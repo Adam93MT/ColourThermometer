@@ -1,0 +1,41 @@
+<html>
+<head>
+	<link href='http://fonts.googleapis.com/css?family=Raleway:400,500,600,300,200,700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href="colorTherm.css">
+	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+	<script type="text/javascript" src="colorTherm.js"></script>
+	<script type="text/javascript" src="jquery.simpleWeather.min.js"></script>
+	<script type="text/javascript" src="chance.js"></script>
+</head>
+
+<body>
+	<section id="localTemp">
+		<div class="conditions foreground"></div>
+		<div class="conditions background"></div>
+	<!-- 	<div id="again">Temp</div>
+		<input id="temp_slider" type="range" min="-50" max="50" value="0"> -->
+		<div class="display-lrg">
+			<span class="text">It's</span>
+			<br/>
+			<span class="number" id="temp">0</span>
+			<span class="number" id="deg">&deg;C</span>
+			<br/>
+			<span class="text">in </span>
+			<span class="text" id="location">City</span>
+		</div>
+	</section>
+	<div class="divider"></div>
+	<section id="forecast">
+		<div class="display-med">
+			<ul>
+				<li id="day1">1</li>
+				<li id="day2">2</li>
+				<li id="day3">3</li>
+				<li id="day4">4</li>
+				<li id="day5">5</li>
+			</ul>
+		</div>
+	</section>
+	<!-- <div class="divider" id="footer"></div> -->
+</body>
+</html>
