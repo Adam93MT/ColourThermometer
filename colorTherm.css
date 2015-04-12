@@ -8,7 +8,7 @@ body{
 
 section {
 	width: 100vw;
-	height: 101vh;
+	height: 10vh;
 	margin: 0;
 	padding: 20px 0;
 	display: table-cell;
@@ -24,10 +24,8 @@ section {
 	height: 100vh;
 	overflow: hidden;
 	background-size: 100%;
-
-	/*display: none;*/
 }
-	.foreground.snow {
+/*	.foreground.snow {
 		background-image: url('img/snow-front.png');
 		animation: light_snow linear 24s infinite;
 		-webkit-animation: light_snow linear 24s infinite;
@@ -36,7 +34,7 @@ section {
 		background-image: url('img/snow-back.gif');
 		animation: light_snow linear 36s infinite;
 		-webkit-animation: light_snow linear 36s infinite;
-	}
+	}*/
 
 .display-lrg {
 	text-align: center;
@@ -49,13 +47,21 @@ section {
 .number {
 	font-size: 12em;
 }
+@media screen and (max-width: 768px) {
+	.number {
+		font-size: 6em;
+	}
+	.text {
+		font-size: 2em;
+	}
+}
 .text {
 	font-size: 3em;
 }
 
 .divider {
 	width: 100vw;
-	height: 67vh;
+	height: 50vh;
 	padding: 0;
 	margin: 0;
 	background-color: #333333;
@@ -70,36 +76,27 @@ section {
 	padding: 0;
 }
 
+
+#forecast {
+	padding: 0;
+}
 ul {
 	display: block;
-	margin: 1vh 0;
+	margin: 0;
 	padding: 0 0 ;
 	list-style-type: none;
 }
 
 #forecast li {
-	display: inline-block;
-	width: 19vw;
-	height: 18vh;
-	padding: 1vh 0;
+	display: block;
+	width: 100vw;
+	height: 7rem;
+	padding: 3.5rem 0;
 	margin: 0;
 	list-style: none;
-	font-size: 4vw;
+	font-size: 3rem;
+	line-height: 3.5rem;
 	text-align: center;
-}
-
-
-@media screen and (max-width: 720px) {
-	#forecast {
-		height: 200vh;
-	}
-	#forecast li {
-		width: 50vw;
-		height: 10vh;
-		padding: 15vh 25vw;
-		font-size: 7vw;
-		vertical-align: middle;
-	}
 }
 
 

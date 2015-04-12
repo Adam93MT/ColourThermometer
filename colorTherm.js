@@ -201,7 +201,7 @@ function getForecast(myLocation){
 				hueCast[i] = tempToColor(avg(weather.forecast[i].high, weather.forecast[i].low));
 			}
 			
-			setForecastGradient(hueCast,sat,light,alpha);
+			setForecastVertical(hueCast,sat,light,alpha);
 			setForecastText(weather);
 			//dfd.resolve();
 		},
@@ -235,9 +235,16 @@ function setForecastGradient(h,s,v,a) {
  		background: gs_ms,
  		background: gs,
  	});
-
-
- 	/* TODO : SET GRADIENT TO VERTICAL ON MOBILE */
+}
+function setForecastVertical(h,s,v,a) {
+	var cs = [];//'hsla(' + h + ',' + s + '%,' + l + '%,' + a + ')';
+	for (var i = h.length - 1; i >= 0; i--) {
+		cs[i] = 'hsl(' + h[i].toString() + ',' + s.toString() + '%,' + v.toString() + '%)';
+		var j = i + 1;
+		$('#forecast li#day'+ j).css({
+			backgroundColor: cs[i]
+		});
+	}
 }
 
 function setForecastText(w) {
