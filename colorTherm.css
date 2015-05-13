@@ -47,6 +47,9 @@ section {
 .number {
 	font-size: 12em;
 }
+.text {
+	font-size: 3em;
+}
 @media screen and (max-width: 768px) {
 	.number {
 		font-size: 6em;
@@ -55,10 +58,6 @@ section {
 		font-size: 2em;
 	}
 }
-.text {
-	font-size: 3em;
-}
-
 .divider {
 	width: 100vw;
 	height: 50vh;

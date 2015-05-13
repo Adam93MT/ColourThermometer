@@ -3,32 +3,50 @@
 // var green = 0;
 // var blue = 0;
 var pi = Math.PI;
+var lat = 0;
+var lng = 0;
 var date = new Date();
 var alpha = 1;
 var hue = 0;
 var sat = 100;
-var light = 40;
-var font_light = 90;
+var light = 24; // midnight
+var font_light = 75;
 // We also set the temperature to 0˚C
 var degree = 'c';
 var tempC = 0;
 var tempF = (9/5)*tempC + 32;
+
+function reset_vars(){
+	lat = 0;
+	lng = 0;
+	date = new Date();
+	alpha = 1;
+	hue = 0;
+	sat = 100;
+	light = 24; // midnight
+	font_light = 75;
+	// We also set the temperature to 0˚C
+	degree = 'c';
+	tempC = 0;
+	tempF = (9/5)*tempC + 32;
+}
 
 var locationName = 'Sydney, AU';
 
 
 
 $(document).ready(function(){
-		timeToLight();
+	reset_vars();
 		locationName = chance.country({full : true});
 		console.log(locationName);
 		if (navigator.geolocation){
+			reset_vars();
 			if (navigator.geolocation.getCurrentPosition(getLocation)){
 				//
 			}
 			else {
 				//Reset the units
-				degree = 'c'
+				reset_vars();
 
 				getTemp(locationName);
 				getForecast(locationName);
@@ -36,7 +54,7 @@ $(document).ready(function(){
 		}
 		else {
 			//Reset the units
-			degree = 'c'
+			reset_vars();
 			getTemp(locationName);
 			getForecast(locationName);
 		}
@@ -70,20 +88,27 @@ $(document).ready(function(){
  // ------------------------------------------------- //
 
 function timeToLight(){
-	
 	var h = date.getHours();
 	if (date.getMinutes() > 30) {h++}
-
-	var l = -Math.cos(pi/12*h)*5;
-	light += l;
+	// Time-zone shift
+	// var tShift = lng/36;
+	// h += tShift;
+	// console.log('time-zone: ' + tShift);
+	
+	var l = -Math.cos(pi/12*h)/2 + 0.5;
+	//alert(l);
+	light += l*18;
 	font_light = light + 55;
 	$('.display-lrg').css('color', 'hsl(0,0%,' + font_light + '%)');
+	return light;
 }
 
 function getLocation(data){
-	var lat = data.coords.latitude;
-	var lng = data.coords.longitude;
+	reset_vars();
+	lat = data.coords.latitude;
+	lng = data.coords.longitude;
 	locationName = lat + ', ' + lng;
+
 	degree= 'c';
 	getTemp(locationName);
 	getForecast(locationName);
@@ -121,6 +146,7 @@ function getTemp(myLocation){
 			$('#localTemp #location').html(weather.city + region);
 
 			hue = tempToColor(tempC);
+			light = timeToLight();
 			setLocalColor(hue,sat,light,alpha);
 
 			console.log(weather.currently);
@@ -172,7 +198,7 @@ if (condition == 'Snow' || condition =='Snowy') {
 // And sets Divider color
 function setLocalColor(h,s,l,a) {
 	var colorString = 'hsla(' + h + ',' + s + '%,' + l + '%,' + a + ')';
-	// console.log(colorString);
+	 console.log(colorString);
  	$('#localTemp').css('background-color', colorString);
 
  	setDividerColor(h,s,l,a);
@@ -269,6 +295,11 @@ function avg (a,b) {
 	return parseInt(c/2);
 }
 
+function goTo(manual_location) {
+	reset_vars();
+	getTemp(manual_location);
+	getForecast(manual_location);
+}
 
 
 // #214739
