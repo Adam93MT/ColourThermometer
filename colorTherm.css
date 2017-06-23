@@ -65,7 +65,7 @@ section {
 	font-size: 1.5rem;
 	line-height: 3.5rem;
 	font-family: 'Raleway', 'Helvetica', 'Arial', sans-serif;
-	color: #fff;
+	color: inherit;
 	text-align: center;
 }
 

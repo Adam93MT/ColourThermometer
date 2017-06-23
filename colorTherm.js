@@ -52,21 +52,18 @@ $(document).ready(function(){
 				//Reset the units
 				reset_vars();
 				getTemp(Coords);
-				getForecast(Coords);
 			}
 		}
 		else {
 			//Reset the units
 			reset_vars();
 			getTemp(Coords);
-			getForecast(Coords);
 		}
 
 		$('.shuffle').click(function(){
 			Coords = randomCoords();
 			reset_vars();
 			getTemp(Coords);
-			getForecast(Coords);
 		});
 });
 
@@ -114,7 +111,6 @@ function getLocation(data){
 
 	degree= 'c';
 	getTemp(locationName);
-	getForecast(locationName);
 }
 
 // Calls for the current temp
@@ -154,12 +150,13 @@ function getTemp(myLocation){
 
 			setLocalColor(hue,sat,light,alpha);
 
+			getForecast(weather)
+
 			//dfd.resolve();
 		},
 		error: function(){
 			Coords = randomCoords()
 			getTemp(Coords);
-			getForecast(Coords);
 		}
 	});
 	//return dfd.promise();
@@ -170,25 +167,14 @@ function getTemp(myLocation){
 }
 
 // Calls for the 5 day forecast
-function getForecast(myLocation){
-	$.simpleWeather({
-		location: myLocation,
-		unit: 'c',
-		success: function(weather){
-			tempC = weather.temp;
-			var hueCast = [];
-			for (var i = weather.forecast.length - 1; i >= 0; i--) {
-				hueCast[i] = tempToColor(avg(weather.forecast[i].high, weather.forecast[i].low));
-			}
-			
-			setForecastVertical(hueCast,sat,light,alpha);
-			setForecastText(weather);
-			//dfd.resolve();
-		},
-		error: function(){
-			//dfd.reject();
-		}
-	});
+function getForecast(weather){
+	hueCast = []
+	for (var i = weather.forecast.length - 1; i >= 0; i--) {
+		hueCast[i] = tempToColor(avg(weather.forecast[i].high, weather.forecast[i].low));
+	}
+	
+	setForecastVertical(hueCast,sat,light,alpha);
+	setForecastText(weather);
 }
 
 // Converts a temp value to a hue value. returns int.
@@ -330,7 +316,6 @@ function avg (a,b) {
 function goTo(manual_location) {
 	reset_vars();
 	getTemp(manual_location);
-	getForecast(manual_location);
 }
 
 
