@@ -5,6 +5,7 @@
 var pi = Math.PI;
 var lat = 0;
 var lng = 0;
+var Coords = ''
 var date = new Date();
 var alpha = 1;
 var hue = 0;
@@ -19,6 +20,7 @@ var tempF = (9/5)*tempC + 32;
 function reset_vars(){
 	lat = 0;
 	lng = 0;
+	Coords = ""
 	date = new Date();
 	alpha = 1;
 	hue = 0;
@@ -31,14 +33,16 @@ function reset_vars(){
 	tempF = (9/5)*tempC + 32;
 }
 
-var locationName = 'Sydney, AU';
-
-
+var locationName = 'Toronto, CA';
 
 $(document).ready(function(){
 	reset_vars();
-		locationName = chance.country({full : true});
-		console.log(locationName);
+		// First pick a random location
+		// locationName = chance.country({full : true});
+		// console.log(locationName);
+
+		Coords = randomCoords();
+
 		if (navigator.geolocation){
 			reset_vars();
 			if (navigator.geolocation.getCurrentPosition(getLocation)){
@@ -47,16 +51,15 @@ $(document).ready(function(){
 			else {
 				//Reset the units
 				reset_vars();
-
-				getTemp(locationName);
-				getForecast(locationName);
+				getTemp(Coords);
+				getForecast(Coords);
 			}
 		}
 		else {
 			//Reset the units
 			reset_vars();
-			getTemp(locationName);
-			getForecast(locationName);
+			getTemp(Coords);
+			getForecast(Coords);
 		}
 });
 
@@ -87,22 +90,15 @@ $(document).ready(function(){
 // });
  // ------------------------------------------------- //
 
-function timeToLight(){
-	var h = date.getHours();
-	if (date.getMinutes() > 30) {h++}
-	// Time-zone shift
-	// var tShift = lng/36;
-	// h += tShift;
-	// console.log('time-zone: ' + tShift);
-	
-	var l = -Math.cos(pi/12*h)/2 + 0.5;
-	//alert(l);
-	light += l*18;
-	font_light = light + 55;
-	$('.display-lrg').css('color', 'hsl(0,0%,' + font_light + '%)');
-	return light;
+
+
+function randomCoords() {
+	ll = chance.coordinates();
+	console.log(ll);
+	return ll
 }
 
+// Converts lat, long doubles to single string, then calls getTemp/getForecast
 function getLocation(data){
 	reset_vars();
 	lat = data.coords.latitude;
@@ -113,6 +109,7 @@ function getLocation(data){
 	getTemp(locationName);
 	getForecast(locationName);
 }
+
 // Calls for the current temp
 function getTemp(myLocation){
 	// Make an AJAX call to Yahoo, (or other) and assign it to temperature
@@ -124,6 +121,7 @@ function getTemp(myLocation){
 			tempC = weather.temp;
 			console.log(weather);
 
+			// Set temperature numbers in HTML
 			if (weather.country == 'United States') {
 				tempF = parseInt((9/5)*tempC + 32);
 				$('#localTemp #temp').html(tempF);
@@ -133,86 +131,33 @@ function getTemp(myLocation){
 				degree = 'c';
 				$('#localTemp #temp').html(tempC);
 			}
-
 			$('#localTemp #deg').html('&deg;' + degree.toUpperCase());
+			$('#localTemp #location').html(weather.city + ', ' + weather.country);
 
-			if (weather.region) {
-				var region = ', ' + weather.region;
-			}
-			else
-				var region = '';
-
-
-			$('#localTemp #location').html(weather.city + region);
-
+			// idxtz = weather.title.search(/\d/) + 9 // Index of local time in title + 9
+			// var timeZone = weather.title.slice(idxtz, weather.title.length);
+			
 			hue = tempToColor(tempC);
 			light = timeToLight();
+			sat = vizToSat(weather.visibility)
+			console.log("saturation: " + sat)
+			setCondition(weather.currently)
+			
 			setLocalColor(hue,sat,light,alpha);
 
-			console.log(weather.currently);
-			setCondition(weather.currently);
 			//dfd.resolve();
 		},
 		error: function(){
-			locationName = chance.country({full : true});
-			console.log(locationName);
-			getTemp(locationName);
-			getForecast(locationName);
+			Coords = randomCoords()
+			getTemp(Coords);
+			getForecast(Coords);
 		}
 	});
 	//return dfd.promise();
-
 	// var t = $('#temp_slider').val();
 	// $('#again').html(t);
 	// $('#localTemp #temp').html(t);
 	// tempC = parseFloat(t);
-}
-// Converts a temp value to a hue value. returns int.
-function tempToColor(temp){
-	// USE HSLA //
-	var maxColor = 180;
-	var tempRange = 80; // -50 -> 50
-	var center = 0;
-	var minTemp = center - tempRange/2;
-	var maxTemp = center + tempRange/2;
-
-	var minHue = 270;
-	var maxHue = 20;
-	var hueRange = minHue - maxHue;
-
-	//hue = Math
-
-	hue = minHue - (temp - minTemp)*hueRange/tempRange;
-	return parseInt(hue);
-	//console.log(hue);
-}
-
-function setCondition(condition){
-if (condition == 'Snow' || condition =='Snowy') {
-	$('.conditions').addClass('snow');
-}
-
-}
-
-// Sets the #local div to the current temp 
-// And sets Divider color
-function setLocalColor(h,s,l,a) {
-	var colorString = 'hsla(' + h + ',' + s + '%,' + l + '%,' + a + ')';
-	 console.log(colorString);
- 	$('#localTemp').css('background-color', colorString);
-
- 	setDividerColor(h,s,l,a);
- 	
-}
-function setDividerColor(h,s,l,a) {
-	// Set Divider Color
- 	var t = date.getTime();
- 	var x = (t%2) ? -1 : 1;
- 	//x = 1;
- 	//var y = 360/(t%2 + 2); // half or 1/3 away
- 	var y = (x>0) ? 120 : 180; //1/3 or half away
- 	console.log(x*y);
- 	$('.divider').css('background-color', 'hsl('+ (h + x*y)%360 +','+ s/3 +'%,' + l*1.2 + '%)');
 }
 
 // Calls for the 5 day forecast
@@ -235,6 +180,72 @@ function getForecast(myLocation){
 			//dfd.reject();
 		}
 	});
+}
+
+// Converts a temp value to a hue value. returns int.
+function tempToColor(temp){
+	// USE HSLA //
+	var maxColor = 180;
+	var tempRange = 80; // -50 -> 50
+	var center = 0;
+	var minTemp = center - tempRange/2;
+	var maxTemp = center + tempRange/2;
+
+	var minHue = 270;
+	var maxHue = 20;
+	var hueRange = minHue - maxHue;
+
+	//hue = Math
+
+	hue = minHue - (temp - minTemp)*hueRange/tempRange;
+	return parseInt(hue);
+	//console.log(hue);
+}
+
+function timeToLight(h){
+	if (typeof h === 'undefined')
+		h = date.getHours();
+	if (date.getMinutes() > 30) {h++}
+	
+	var l = -Math.cos(pi/12*h)/2 + 0.5;
+	//alert(l);
+	light += l*18;
+	font_light = light + 55;
+	$('.display-lrg').css('color', 'hsl(0,0%,' + font_light + '%)');
+	return light;
+}
+
+function vizToSat(viz) {
+	console.log("Visibility: " + viz);
+	var coef = 3;
+	return Math.min(coef*viz, 100);
+}
+
+function setCondition(condition){
+	if (condition == 'Snow' || condition =='Snowy') {
+		$('.conditions').addClass('snow');
+	}
+}
+
+// Sets the #local div to the current temp 
+// And sets Divider color
+function setLocalColor(h,s,l,a) {
+	var colorString = 'hsla(' + h + ',' + s + '%,' + l + '%,' + a + ')';
+	 // console.log(colorString);
+ 	$('#localTemp').css('background-color', colorString);
+
+ 	setDividerColor(h,s,l,a);	
+}
+
+function setDividerColor(h,s,l,a) {
+	// Set Divider Color
+ 	var t = date.getTime();
+ 	var x = (t%2) ? -1 : 1;
+ 	//x = 1;
+ 	//var y = 360/(t%2 + 2); // half or 1/3 away
+ 	var y = (x>0) ? 120 : 180; //1/3 or half away
+ 	// console.log(x*y);
+ 	$('.divider').css('background-color', 'hsl('+ (h + x*y)%360 +','+ s/3 +'%,' + l*1.2 + '%)');
 }
 
 // Sets the #forecast div to the forecast gradient
@@ -262,6 +273,7 @@ function setForecastGradient(h,s,v,a) {
  		background: gs,
  	});
 }
+
 function setForecastVertical(h,s,v,a) {
 	var cs = [];//'hsla(' + h + ',' + s + '%,' + l + '%,' + a + ')';
 	for (var i = h.length - 1; i >= 0; i--) {
