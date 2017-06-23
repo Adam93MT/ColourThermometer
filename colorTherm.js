@@ -61,6 +61,13 @@ $(document).ready(function(){
 			getTemp(Coords);
 			getForecast(Coords);
 		}
+
+		$('.shuffle').click(function(){
+			Coords = randomCoords();
+			reset_vars();
+			getTemp(Coords);
+			getForecast(Coords);
+		});
 });
 
 
@@ -114,10 +121,12 @@ function getLocation(data){
 function getTemp(myLocation){
 	// Make an AJAX call to Yahoo, (or other) and assign it to temperature
 	var dfd = $.Deferred;
+	setLoadingUI();
 	$.simpleWeather({
 		location: myLocation,
 		unit: degree,
 		success: function(weather){
+			unsetLoadingUI();
 			tempC = weather.temp;
 			console.log(weather);
 
@@ -142,7 +151,7 @@ function getTemp(myLocation){
 			sat = vizToSat(weather.visibility)
 			console.log("saturation: " + sat)
 			setCondition(weather.currently)
-			
+
 			setLocalColor(hue,sat,light,alpha);
 
 			//dfd.resolve();
@@ -233,6 +242,7 @@ function setLocalColor(h,s,l,a) {
 	var colorString = 'hsla(' + h + ',' + s + '%,' + l + '%,' + a + ')';
 	 // console.log(colorString);
  	$('#localTemp').css('background-color', colorString);
+ 	$('.shuffle').css('background-color', colorString);
 
  	setDividerColor(h,s,l,a);	
 }
@@ -300,6 +310,16 @@ function setForecastText(w) {
 		$('#forecast #day' + (i+1)).html(day + "<br/>" + temp + "&deg;" + degree.toUpperCase());
 		
 	}
+}
+
+function setLoadingUI(){
+	$('.shuffle').addClass('loading');
+	$('.shuffle').text('Loading...');
+}
+
+function unsetLoadingUI(){
+	$('.shuffle').removeClass('loading');
+	$('.shuffle').text('');	
 }
 
 function avg (a,b) {
