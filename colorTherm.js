@@ -224,7 +224,7 @@ function timeToLight(t){
 		h = parseFloat(t.slice(0,2));
 		m = parseFloat(t.slice(3,5));
 
-		if (t.slice(6,8) == 'PM') {
+		if ((t.slice(6,8) == 'PM' && h < 12) || (t.slice(6,8) == 'AM' && h == 12.)) {
 			h += 12;
 		}
 
