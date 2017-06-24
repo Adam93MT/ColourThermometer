@@ -6,13 +6,23 @@ body{
 	color: #fff;
 }
 
+*::selection {
+	background: #ffffff22; /* WebKit/Blink Browsers */
+}
+*::-moz-selection  {
+	background: #ffffff22; /* Gecko Browsers */
+}
+
 section {
 	width: 100vw;
-	height: 10vh;
+	min-height: 10vh;
 	margin: 0;
-	padding: 20px 0;
 	display: table-cell;
 	vertical-align: middle;
+}
+
+#localTemp {
+	height: 100vh;
 }
 
 .conditions {
@@ -39,9 +49,9 @@ section {
 .display-lrg {
 	text-align: center;
 	width: 50%;
-	padding: 10% 16%;
-	margin: 5% 9%;
-	border-radius: 4px;
+	padding: 0 16%;
+	margin: 0 9%;
+	/*border-radius: 4px;*/
 }
 
 .number {
@@ -50,27 +60,49 @@ section {
 .text {
 	font-size: 3em;
 }
+
+#location {
+	display: inline-block;
+	min-width: 1em;
+	min-height: 1em;
+	padding: 4px;
+}
+
+#location:hover {
+	background: #ffffff11;
+}
+
+#location:focus {
+	outline: none;
+	background: #ffffff11;
+	margin: -2px;
+	border: 2px solid #ffffff22;
+}
+
 .shuffle {
 	display: block;
-	background-image: url('img/shuffle.svg');
+/*	background-image: url('img/shuffle.svg');
 	background-repeat: no-repeat;
 	background-position: 50%;
 	background-color: #fff;
-	background-size: 3.5rem;
+	background-size: 3.5rem;*/
 	border: none;
-	width: 100%;
+	width: 50%;
+	margin: 0 25%;
 	height: 3.5rem;
 	cursor: pointer;
 	z-index: 10;
-	font-size: 1.5rem;
+	font-size: 1.2rem;
 	line-height: 3.5rem;
 	font-family: 'Raleway', 'Helvetica', 'Arial', sans-serif;
 	color: inherit;
 	text-align: center;
+	text-decoration: underline;
 }
 
 .shuffle.loading{
 	background-image: none;
+	text-decoration: none;
 }
 
 @media screen and (max-width: 768px) {

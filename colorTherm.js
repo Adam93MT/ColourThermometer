@@ -10,7 +10,7 @@ var date = new Date();
 var alpha = 1;
 var hue = 0;
 var sat = 100;
-var light = 24; // midnight
+var light = 0; // midnight
 var font_light = 75;
 // We also set the temperature to 0˚C
 var degree = 'c';
@@ -25,7 +25,7 @@ function reset_vars(){
 	alpha = 1;
 	hue = 0;
 	sat = 100;
-	light = 24; // midnight
+	light = 0; // midnight
 	font_light = 75;
 	// We also set the temperature to 0˚C
 	degree = 'c';
@@ -33,40 +33,56 @@ function reset_vars(){
 	tempF = (9/5)*tempC + 32;
 }
 
-var locationName = 'Toronto, CA';
+// var locationName = 'Toronto, CA';
 
+// Once the page loads
 $(document).ready(function(){
 	reset_vars();
-		// First pick a random location
-		// locationName = chance.country({full : true});
-		// console.log(locationName);
+	// First pick a random location
+	// locationName = chance.country({full : true});
+	// console.log(locationName);
 
-		Coords = randomCoords();
+	Coords = randomCoords();
 
-		if (navigator.geolocation){
-			reset_vars();
-			if (navigator.geolocation.getCurrentPosition(getLocation)){
-				//
-			}
-			else {
-				//Reset the units
-				reset_vars();
-				getTemp(Coords);
-			}
+	if (navigator.geolocation){
+		reset_vars();
+		if (navigator.geolocation.getCurrentPosition(getLocation)){
+			//
 		}
 		else {
 			//Reset the units
 			reset_vars();
 			getTemp(Coords);
 		}
+	}
+	else {
+		//Reset the units
+		reset_vars();
+		getTemp(Coords);
+	}
 
-		$('.shuffle').click(function(){
-			Coords = randomCoords();
-			reset_vars();
-			getTemp(Coords);
+	// Reload the data when user presses the Shuffle button
+	$('.shuffle').click(function(){
+		Coords = randomCoords();
+		reset_vars();
+		getTemp(Coords);
+	});
+
+	$('#location').on('focus', function() {
+		// $(this).text('');
+		$(this).on('keydown', function(e) {  
+			// console.log(e.keyCode);
+		    if(e.keyCode == 13) // If pressed ENTER key
+		    {
+		        e.preventDefault();
+		        $(this).blur();
+		        reset_vars();
+		        getTemp($(this).text());
+		    }
 		});
-});
+	});
 
+});
 
 // DEBUGING FUNCTION --------------------------------//
 // $(document).click(function(){
@@ -117,6 +133,7 @@ function getLocation(data){
 function getTemp(myLocation){
 	// Make an AJAX call to Yahoo, (or other) and assign it to temperature
 	var dfd = $.Deferred;
+	reset_vars();
 	setLoadingUI();
 	$.simpleWeather({
 		location: myLocation,
@@ -125,7 +142,6 @@ function getTemp(myLocation){
 			unsetLoadingUI();
 			tempC = weather.temp;
 			console.log(weather);
-
 			// Set temperature numbers in HTML
 			if (weather.country == 'United States') {
 				tempF = parseInt((9/5)*tempC + 32);
@@ -139,13 +155,13 @@ function getTemp(myLocation){
 			$('#localTemp #deg').html('&deg;' + degree.toUpperCase());
 			$('#localTemp #location').html(weather.city + ', ' + weather.country);
 
-			// idxtz = weather.title.search(/\d/) + 9 // Index of local time in title + 9
-			// var timeZone = weather.title.slice(idxtz, weather.title.length);
+			idxt = weather.title.search(/\d/) // Index of local time in title + 9
+			var localTime = weather.title.slice(idxt, idxt + 8);
 			
 			hue = tempToColor(tempC);
-			light = timeToLight();
+			light = timeToLight(localTime);
 			sat = vizToSat(weather.visibility)
-			console.log("saturation: " + sat)
+			// console.log("saturation: " + sat)
 			setCondition(weather.currently)
 
 			setLocalColor(hue,sat,light,alpha);
@@ -155,6 +171,7 @@ function getTemp(myLocation){
 			//dfd.resolve();
 		},
 		error: function(){
+			reset_vars();
 			Coords = randomCoords()
 			getTemp(Coords);
 		}
@@ -197,22 +214,33 @@ function tempToColor(temp){
 	//console.log(hue);
 }
 
-function timeToLight(h){
-	if (typeof h === 'undefined')
-		h = date.getHours();
-	if (date.getMinutes() > 30) {h++}
+function timeToLight(t){
+	if (typeof t === 'undefined') {
+		t = date.getHours();
+		if (date.getMinutes() > 30)
+			t++
+	} else {
+		// console.log(typeof h)
+		h = parseFloat(t.slice(0,2));
+		m = parseFloat(t.slice(3,5));
+
+		if (t.slice(6,8) == 'PM') {
+			h += 12;
+		}
+
+		t = h + m/60.
+	}
 	
-	var l = -Math.cos(pi/12*h)/2 + 0.5;
-	//alert(l);
-	light += l*18;
-	font_light = light + 55;
+	var l = -Math.cos(pi/12*t)/2 + 0.5;
+	var lght = 16 + l*24; // Range 16% - 40% lightness
+	font_light = lght + 55;
 	$('.display-lrg').css('color', 'hsl(0,0%,' + font_light + '%)');
-	return light;
+	return lght;
 }
 
 function vizToSat(viz) {
-	console.log("Visibility: " + viz);
-	var coef = 3;
+	// console.log("Visibility: " + viz);
+	var coef = 3.6;
 	return Math.min(coef*viz, 100);
 }
 
@@ -244,32 +272,31 @@ function setDividerColor(h,s,l,a) {
  	$('.divider').css('background-color', 'hsl('+ (h + x*y)%360 +','+ s/3 +'%,' + l*1.2 + '%)');
 }
 
-// Sets the #forecast div to the forecast gradient
-function setForecastGradient(h,s,v,a) {
-	var cs = [];//'hsla(' + h + ',' + s + '%,' + l + '%,' + a + ')';
-	for (var i = h.length - 1; i >= 0; i--) {
-		cs[i] = 'hsl(' + h[i].toString() + ',' + s.toString() + '%,' + v.toString() + '%)';
-	}
+// Sets the #forecast div to the appropriate colours
+// function setForecastGradient(h,s,v,a) {
+// 	var cs = [];//'hsla(' + h + ',' + s + '%,' + l + '%,' + a + ')';
+// 	for (var i = h.length - 1; i >= 0; i--) {
+// 		cs[i] = 'hsl(' + h[i].toString() + ',' + s.toString() + '%,' + v.toString() + '%)';
+// 	}
 
-	// var gradString_moz
-	var gs_webkit = "-webkit-gradient(linear, left top, right top, color-stop(10%," + cs[0] +"), color-stop(30%," + cs[1] + "), color-stop(50%," + cs[2]+ "), color-stop(70%," +cs[3] +"), color-stop(90%, "+cs[4] + "))"; /* Chrome,Safari4+ */
-	var gs_webkit_linear = "-webkit-linear-gradient(left,  " + cs[0] +" 10%," + cs[1] + " 30%," + cs[2]+ " 50%," +cs[3] +" 70%, "+cs[4] + " 90%)"; /* Chrome10+,Safari5.1+ */
-	var gs = "linear-gradient(to right,  " + cs[0] +" 10%," + cs[1] + " 30%," + cs[2]+ " 50%," +cs[3] +" 70%, "+cs[4] + " 90%)"; /* W3C */
-	var gs_moz = "-moz-linear-gradient(left,  " + cs[0] +" 10%, " + cs[1] + " 30%, " + cs[2]+ " 50%, " +cs[3] +" 70%,  "+cs[4] + " 90%)";
-	var gs_o = "-o-linear-gradient(left,  " + cs[0] +" 10%," + cs[1] + " 30%," + cs[2]+ " 50%," +cs[3] +" 70%, "+cs[4] + " 90%)";
-	var gs_ms = "-ms-linear-gradient(left,  " + cs[0] +" 10%," + cs[1] + " 30%," + cs[2]+ " 50%," +cs[3] +" 70%, "+cs[4] + " 90%)";
-	//console.log(gs);
+// 	// var gradString_moz
+// 	var gs_webkit = "-webkit-gradient(linear, left top, right top, color-stop(10%," + cs[0] +"), color-stop(30%," + cs[1] + "), color-stop(50%," + cs[2]+ "), color-stop(70%," +cs[3] +"), color-stop(90%, "+cs[4] + "))"; /* Chrome,Safari4+ */
+// 	var gs_webkit_linear = "-webkit-linear-gradient(left,  " + cs[0] +" 10%," + cs[1] + " 30%," + cs[2]+ " 50%," +cs[3] +" 70%, "+cs[4] + " 90%)"; /* Chrome10+,Safari5.1+ */
+// 	var gs = "linear-gradient(to right,  " + cs[0] +" 10%," + cs[1] + " 30%," + cs[2]+ " 50%," +cs[3] +" 70%, "+cs[4] + " 90%)"; /* W3C */
+// 	var gs_moz = "-moz-linear-gradient(left,  " + cs[0] +" 10%, " + cs[1] + " 30%, " + cs[2]+ " 50%, " +cs[3] +" 70%,  "+cs[4] + " 90%)";
+// 	var gs_o = "-o-linear-gradient(left,  " + cs[0] +" 10%," + cs[1] + " 30%," + cs[2]+ " 50%," +cs[3] +" 70%, "+cs[4] + " 90%)";
+// 	var gs_ms = "-ms-linear-gradient(left,  " + cs[0] +" 10%," + cs[1] + " 30%," + cs[2]+ " 50%," +cs[3] +" 70%, "+cs[4] + " 90%)";
+// 	//console.log(gs);
 
-	$('#forecast').css({
-		background: gs_moz,
- 		background: gs_webkit,
- 		background: gs_webkit_linear,
- 		background: gs_o,
- 		background: gs_ms,
- 		background: gs,
- 	});
-}
-
+// 	$('#forecast').css({
+// 		background: gs_moz,
+//  		background: gs_webkit,
+//  		background: gs_webkit_linear,
+//  		background: gs_o,
+//  		background: gs_ms,
+//  		background: gs,
+//  	});
+// }
 function setForecastVertical(h,s,v,a) {
 	var cs = [];//'hsla(' + h + ',' + s + '%,' + l + '%,' + a + ')';
 	for (var i = h.length - 1; i >= 0; i--) {
@@ -305,7 +332,7 @@ function setLoadingUI(){
 
 function unsetLoadingUI(){
 	$('.shuffle').removeClass('loading');
-	$('.shuffle').text('');	
+	$('.shuffle').text('I\'m Feeling Lucky!');	
 }
 
 function avg (a,b) {
