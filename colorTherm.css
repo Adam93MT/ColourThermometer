@@ -7,10 +7,12 @@ body{
 }
 
 *::selection {
-	background: #ffffff22; /* WebKit/Blink Browsers */
+	background: rgb(220,220,220);
+	background: rgba(255,255,255,0.133); /* WebKit/Blink Browsers */
 }
 *::-moz-selection  {
-	background: #ffffff22; /* Gecko Browsers */
+	background: rgb(220,220,220);
+	background: rgba(255,255,255,0.133); /* Gecko Browsers */
 }
 
 section {
@@ -20,6 +22,27 @@ section {
 	display: table-cell;
 	vertical-align: middle;
 }
+
+#info_box {
+	/* Disabled for now */
+	display: none; 
+	position: absolute;
+	top: 0;
+	right: 0;
+	cursor: pointer;
+}
+
+#info_icon {
+	width: 24px;
+	height: 24px;
+	padding: 36px;
+	position: relative;
+}
+
+#info_text {
+
+}
+
 
 #localTemp {
 	height: 100vh;
@@ -69,18 +92,20 @@ section {
 }
 
 #location:hover {
-	background: #ffffff11;
+	background: rgba(255,255,255,0.0667);
 }
 
 #location:focus {
 	outline: none;
-	background: #ffffff11;
+	background: rgb(220,220,220);
+	background: rgba(255,255,255,0.0667);
 	margin: -2px;
-	border: 2px solid #ffffff22;
+	border: 2px solid rgba(255,255,255,0.133);
 }
 
 .shuffle {
 	display: block;
+	outline: none;
 /*	background-image: url('img/shuffle.svg');
 	background-repeat: no-repeat;
 	background-position: 50%;

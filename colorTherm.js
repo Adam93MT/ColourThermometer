@@ -46,6 +46,7 @@ $(document).ready(function(){
 
 	if (navigator.geolocation){
 		reset_vars();
+		setLoadingUI();
 		if (navigator.geolocation.getCurrentPosition(getLocation)){
 			//
 		}
@@ -233,8 +234,6 @@ function timeToLight(t){
 	
 	var l = -Math.cos(pi/12*t)/2 + 0.5;
 	var lght = 16 + l*24; // Range 16% - 40% lightness
-	font_light = lght + 55;
-	$('.display-lrg').css('color', 'hsl(0,0%,' + font_light + '%)');
 	return lght;
 }
 
@@ -258,7 +257,15 @@ function setLocalColor(h,s,l,a) {
  	$('#localTemp').css('background-color', colorString);
  	$('.shuffle').css('background-color', colorString);
 
+ 	setTextColor(h,s,l,a);
  	setDividerColor(h,s,l,a);	
+}
+
+function setTextColor(h,s,l,a) {
+	var colorString = 'hsl(0,0%,' + (l + 55) + '%)'
+	$('.display-lrg').css('color', colorString);
+	// document.querySelector(".svgClass").getSVGDocument().getElementById("svg").setAttribute("style", "fill: " + colorString)
+
 }
 
 function setDividerColor(h,s,l,a) {
