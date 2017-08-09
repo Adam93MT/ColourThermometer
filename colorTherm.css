@@ -82,13 +82,23 @@ section {
 }
 .text {
 	font-size: 3em;
+	padding: 4px;
+	margin: auto 0;
+}
+
+.location-line{
+	min-height: 56px;
+	margin: 4px;
+	display: flex;
+	justify-content: center;
 }
 
 #location {
 	display: inline-block;
 	min-width: 1em;
+	max-width: 80%;
 	min-height: 1em;
-	padding: 4px;
+	padding: 4px 8px;
 }
 
 #location:hover {
@@ -103,26 +113,68 @@ section {
 	border: 2px solid rgba(255,255,255,0.133);
 }
 
-.shuffle {
-	display: block;
+.geolocate{
+	display: inline-block;
 	outline: none;
-/*	background-image: url('img/shuffle.svg');
-	background-repeat: no-repeat;
-	background-position: 50%;
-	background-color: #fff;
-	background-size: 3.5rem;*/
 	border: none;
-	width: 50%;
-	margin: 0 25%;
-	height: 3.5rem;
+	height: 56px;
+	width: 56px;
+	margin: auto 0;
 	cursor: pointer;
 	z-index: 10;
-	font-size: 1.2rem;
-	line-height: 3.5rem;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	background-color: rgba(255,255,255,0.0);
+	background-image: url('img/location.svg');
+	background-size: 22px;
+
+	-webkit-transition: all 0.05s ease-in-out;
+	-moz-transition: all 0.05s ease-in-out;
+	transition: all 0.05s ease-in-out;
+}
+.geolocate:hover{ 
+	/*background-size: 23px;*/
+	background-color: rgba(255,255,255,0.1);
+}
+
+.buttons {
+	height: 56px;
+	width: 50%;
+	margin: auto;
+	display: flex;
+	justify-content: center;
+}
+
+.buttons button {
+	display: inline-block;
+	outline: none;
+	border: none;
+	height: 56px;
+	cursor: pointer;
+	z-index: 10;
+	background-repeat: no-repeat;
+	background-position: 50%;
+	background-color: rgba(255,255,255,0.0);
+	-webkit-transition: all 0.05s ease-in-out;
+	-moz-transition: all 0.05s ease-in-out;
+	transition: all 0.05s ease-in-out;
+}
+
+.shuffle {
+	width: auto;
+	/*background-image: url('img/shuffle.svg');*/
+	background-size: 24px;
+	font-size: 20px;
+	line-height: 56px;
 	font-family: 'Raleway', 'Helvetica', 'Arial', sans-serif;
 	color: inherit;
 	text-align: center;
+	text-decoration: none;
+
+}
+.shuffle:hover{
 	text-decoration: underline;
+	background-size: 32px;
 }
 
 .shuffle.loading{

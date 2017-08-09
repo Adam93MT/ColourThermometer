@@ -38,28 +38,20 @@ function reset_vars(){
 // Once the page loads
 $(document).ready(function(){
 	reset_vars();
-	// First pick a random location
-	// locationName = chance.country({full : true});
-	// console.log(locationName);
-
 	Coords = randomCoords();
 
 	if (navigator.geolocation){
 		reset_vars();
 		setLoadingUI();
 		if (navigator.geolocation.getCurrentPosition(getLocation)){
-			//
+			// Use geolocation
 		}
 		else {
-			//Reset the units
-			reset_vars();
-			getTemp(Coords);
+			useIPLocation();
 		}
 	}
 	else {
-		//Reset the units
-		reset_vars();
-		getTemp(Coords);
+		useIPLocation();
 	}
 
 	// Reload the data when user presses the Shuffle button
@@ -68,6 +60,10 @@ $(document).ready(function(){
 		reset_vars();
 		getTemp(Coords);
 	});
+
+	$('.geolocate').click(function(){
+		useIPLocation();
+	})
 
 	$('#location').on('focus', function() {
 		// $(this).text('');
@@ -111,7 +107,19 @@ $(document).ready(function(){
 // });
  // ------------------------------------------------- //
 
-
+function useIPLocation(){
+	reset_vars();
+	setLoadingUI();
+	$.getJSON('//freegeoip.net/json/?callback=?', function(data) {
+		console.log(JSON.stringify(data, null, 2));
+		if (data)
+			var currentLocation = JSON.stringify(data.latitude) + "," + JSON.stringify(data.longitude)
+		else
+			var currentLocation = randomCoords(); // Fallback to random coords
+		getTemp(currentLocation)
+	});
+	// getTemp(Coords);
+}
 
 function randomCoords() {
 	ll = chance.coordinates();
@@ -340,6 +348,7 @@ function setLoadingUI(){
 function unsetLoadingUI(){
 	$('.shuffle').removeClass('loading');
 	$('.shuffle').text('I\'m Feeling Lucky!');	
+	// $('.shuffle').text('');	
 }
 
 function avg (a,b) {
