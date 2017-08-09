@@ -116,8 +116,8 @@ section {
 	display: inline-block;
 	outline: none;
 	border: none;
-	height: 56px;
-	width: 56px;
+	height: 64px;
+	width: 64px;
 	cursor: pointer;
 	z-index: 10;
 	background-repeat: no-repeat;
