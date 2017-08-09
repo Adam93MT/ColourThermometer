@@ -156,10 +156,17 @@ function getTemp(myLocation){
 				tempF = parseInt((9/5)*tempC + 32);
 				$('#localTemp #temp').html(tempF);
 				degree = 'f';
+				weather.country = "USA";
 			}
 			else {
 				degree = 'c';
 				$('#localTemp #temp').html(tempC);
+			}
+			if (weather.country == "United Kingdom") {
+				weather.country = "UK";
+			}
+			if (weather.country == "United Arab Emirates") {
+				weather.country = "UAE";
 			}
 			$('#localTemp #deg').html('&deg;' + degree.toUpperCase());
 			$('#localTemp #location').html(weather.city + ', ' + weather.country);
