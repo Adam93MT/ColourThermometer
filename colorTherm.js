@@ -248,13 +248,20 @@ function timeToLight(t){
 	}
 	
 	var l = -Math.cos(pi/12*t)/2 + 0.5;
-	var lght = 16 + l*24; // Range 16% - 40% lightness
+	var minL = 22
+	var maxL = 44
+	var lght = minL + l*(maxL-minL); // Range 16% - 40% lightness
 	return lght;
 }
 
 function vizToSat(viz) {
-	// console.log("Visibility: " + viz);
-	var coef = 3.6;
+	var coef = 4;
+	var offs = 20
+	var hueOffset = -0.5*Math.cos(pi*(hue) / (2*(50)) );
+	hueOffset = 1+Math.max(0, hueOffset);
+	coef *= hueOffset;
+
+	console.log(hueOffset)
 	return Math.min(coef*viz, 100);
 }
 
@@ -277,8 +284,8 @@ function setLocalColor(h,s,l,a) {
 }
 
 function setTextColor(h,s,l,a) {
-	var colorString = 'hsl(0,0%,' + (l + 55) + '%)'
-	$('.display-lrg').css('color', colorString);
+	// var colorString = 'hsl(0,0%,' + (l + 55) + '%)'
+	// $('.display-lrg').css('color', colorString);
 	// document.querySelector(".svgClass").getSVGDocument().getElementById("svg").setAttribute("style", "fill: " + colorString)
 
 }
@@ -289,7 +296,8 @@ function setDividerColor(h,s,l,a) {
  	var x = (t%2) ? -1 : 1;
  	//x = 1;
  	//var y = 360/(t%2 + 2); // half or 1/3 away
- 	var y = (x>0) ? 120 : 180; //1/3 or half away
+ 	// var y = (x>0) ? 120 : 240; //1/3 or half away
+ 	var y = 120; // Always a third away
  	// console.log(x*y);
  	$('.divider').css('background-color', 'hsl('+ (h + x*y)%360 +','+ s/3 +'%,' + l*1.2 + '%)');
 }

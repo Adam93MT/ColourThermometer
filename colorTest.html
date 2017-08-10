@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+	<script type="text/javascript" src="chance.js"></script>
+	<script type="text/javascript" src="jquery.simpleWeather.min.js"></script>
+	<script type="text/javascript" src="colorTherm.js"></script>
+	<style type="text/css">
+		body {
+			background-color: #fafafa;
+		}
+		div {
+			width: 50%;
+			margin: auto;
+		}
+		input {
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div>
+		<label for="temp">Temp </label><span></span>
+		<input id="temp" type="range" name="temp" min="-50" max="50" />
+
+		<label for="vis">Visibility </label><span></span>
+		<input id="vis" type="range" name="vis" max="28" />
+
+		<label for="temp">Time </label><span></span>
+		<input id="time" type="range" name="time" min="0" max="24" />
+	</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('input').on('change input',function(){
+			$(this).prev().html($(this).val())
+			hue = tempToColor($('#temp').val());
+			t = $('#time').val();
+			var l = -Math.cos(pi/12*t)/2 + 0.5;
+			var light = 16 + l*24; // Range 16% - 40% lightness
+
+			sat = vizToSat($('#vis').val(), hue);
+			var colorString = 'hsl(' + hue + ',' + sat + '%,' + light + '%)';
+			console.log(colorString)
+			$('body').css('background-color', colorString);
+		});
+
+	});
+</script>
+</body>
+</html>
