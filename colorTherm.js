@@ -248,8 +248,8 @@ function timeToLight(t){
 	}
 	
 	var l = -Math.cos(pi/12*t)/2 + 0.5;
-	var minL = 22
-	var maxL = 44
+	var minL = 16
+	var maxL = 40
 	var lght = minL + l*(maxL-minL); // Range 16% - 40% lightness
 	return lght;
 }
